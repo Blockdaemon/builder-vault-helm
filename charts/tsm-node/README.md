@@ -15,7 +15,7 @@ A Helm chart to deploy a Blockdaemon TSM node to kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| config.configFile | string | `"TSM toml config tile here\n"` |  |
+| config.configFile | string | `"TSM toml config file here\n"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `""` | Image to use for deploying the TSM node |
@@ -37,7 +37,7 @@ A Helm chart to deploy a Blockdaemon TSM node to kubernetes
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
-| sdkService | object | `{}` | The primary service definition for the TSM node |
+| sdkService | object | `{"type":"ClusterIP"}` | The primary service definition for the TSM node |
 | securityContext | object | `{}` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.automount | bool | `true` |  |
