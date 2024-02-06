@@ -2,7 +2,7 @@ replicaCount: 1
 index: 2
 
 config:
-  # The following values are used to configure the TSM node.
+  # https://builder-vault-tsm.docs.blockdaemon.com/docs/example-tsm-configuration-file
   configFile: |
     [MPC]
       Threshold = 1
