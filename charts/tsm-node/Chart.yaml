@@ -6,4 +6,4 @@ maintainers:
     email: sre@blockdaemon.com
 type: application
 version: 0.1.0
-appVersion: "61.0.0"
+appVersion: "61.0.2"
