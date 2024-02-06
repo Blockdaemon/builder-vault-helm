@@ -49,7 +49,8 @@ securityContext:
   # runAsUser: 1000
 
 # -- The primary service definition for the TSM node
-sdkService: {}
+sdkService:
+  type: ClusterIP
 
 # -- Optional. Only used for flexibility to expose the mpc port outside of the cluster.
 mpcService: {}
