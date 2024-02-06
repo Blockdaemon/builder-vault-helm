@@ -69,8 +69,6 @@ spec:
       volumes:
       - name: config-volume
         {{- if and .Values.config.configFile .Values.config.configSecretName }}
-        # Fail the deployment by using a non-existent volume type
-        # This is a way to signal an error due to mutual exclusivity violation
         {{- fail "config.configFile and config.configSecretName are mutually exclusive" }}
         {{- else if .Values.config.configFile }}
         configMap:
