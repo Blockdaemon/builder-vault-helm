@@ -4,6 +4,13 @@ This directory has an example of deploying a multi instance TSM cluster with the
 
 Full documentation of the configuration can be found [here](https://builder-vault-tsm.docs.blockdaemon.com/docs/example-tsm-configuration-file).
 
+## Helm Repository
+
+```
+helm repo add builder-vault https://blockdaemon.github.io/builder-vault-helm/
+helm repo update
+```
+
 ## Prerequisites
  - An EKS cluster deployed with the [AWS Loadbalancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html) installed and configured. 
 

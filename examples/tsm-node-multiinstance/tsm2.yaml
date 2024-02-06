@@ -69,6 +69,23 @@ config:
       CleanupInterval = "5m"
       CleanupProbability = 75
 
+    [Audit]
+    # URL of the audit receiver. Audit logs are sent to this URL
+      # Can be a file, HTTP location or s3 location: file://, https://, s3://
+      #ReceiverURL = ""
+
+    # When using an S3-compatible API as the ReceiverURL in [Audit], specify any
+    # non-standard S3 related parameters here
+    [Audit.S3EndpointConfig]
+    # If not using the default S3 endpoint, specify the custom one here
+      #EndpointURL = ""
+    # AWS or S3-compatible API region
+      #Region = ""
+    # Authorization keys for the S3-compatible API
+      #SecretAccessKey = ""
+      #AccessKeyId = ""
+      #SessionToken = ""
+
 image:
   repository: <the name of the repository where tsm-node is stored>
   pullPolicy: IfNotPresent
