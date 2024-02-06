@@ -74,7 +74,7 @@ spec:
         error: "Both configFile and configSecretName are set, which is not allowed. Please set only one."
         {{- else if .Values.config.configFile }}
         configMap:
-          name: {{ template "tsm-node.fullname" . }}-config
+          name: {{ template "tsm-node.fullname" . }}
         {{- else if .Values.config.configSecretName }}
         secret:
           secretName: {{ .Values.config.configSecretName }}

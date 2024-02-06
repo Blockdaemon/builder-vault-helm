@@ -7,8 +7,7 @@ index: 0
 
 config:
   # -- the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName
-  configFile: |
-    TSM toml config file here
+  configFile: ""
   # -- The name of the secret containing the TSM configuration file. MUTUALLY EXCLUSIVE with configFile
   configSecretName: ""
 
