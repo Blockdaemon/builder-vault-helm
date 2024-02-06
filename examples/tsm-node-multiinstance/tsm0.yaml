@@ -1,0 +1,117 @@
+replicaCount: 2
+index: 0
+
+config:
+  # https://builder-vault-tsm.docs.blockdaemon.com/docs/example-tsm-configuration-file
+  configFile: |
+    [MPC]
+      Threshold = 1
+      PlayerCount = 3
+
+    [Player]
+      Index = 0
+      # This is a base64 encoding of the private key used to authenticate the local player towards the remote players. This
+      # must correspond to the public keys configured on the remote players for this player index. A private key can be
+      # generated using the following OpenSSL commands:
+      #
+      # openssl ecparam -name P-256 -genkey -param_enc named_curve -outform DER -out private.key
+      # openssl base64 -A -in private.key; echo
+      #
+      # Instead of P-256 one can use P-384 or P-521 depending on the desired security level (128, 192 or 256 bits).
+      PrivateKey = "BA3E64=="
+
+    [Players.1]
+      Address = "tsm1-tsm-node:9000"
+      # This is a base64 encoding of the players public key. A public key can be generated from the private key using the
+      # following OpenSSL commands:
+      #
+      # openssl ec -inform DER -in private.key -pubout -outform DER -out public.key
+      # openssl base64 -A -in public.key; echo
+      PublicKey = "BA3E64=="
+
+    [Players.2]
+      Address = "tsm2-tsm-node:9000"
+      PublicKey = "BA3E64=="
+
+    [Authentication]
+    # List of API keys used for authentication in SDKv2
+      [[Authentication.APIKeys]]
+        # Only for SDK V2
+        # Base64 encoded hash of the API key. A hash for the API key foobar can be generated with the following command:
+        #
+        # echo -n "foobar" | openssl dgst -sha256 -binary | openssl base64
+        #APIKey = ""
+        # Users with the given API key will be mapped to this user in the system. If the user does not exist, it will be
+        # created automatically. Set this to an existing user ID to migrate from password to API key authentication.
+        #ApplicationID = ""
+
+    [Database]
+      DriverName = "postgres"
+      # This specifies a master encryption key used to protect database records. Note that this key is not directly
+      # used to encrypt data. Use any long random string here and make sure to keep a backup of it somewhere safe.
+      EncryptorMasterPassword = "ENCRYPTION_KEY"      
+      DataSourceName = "host=<hostname>.rds.amazonaws.com port=5432 user=tsm0 password=mypass dbname=tsm0 sslmode=require"
+
+    [MPCTCPServer]
+      Port = 9000
+
+    [SDKServer]
+      Port = 8080
+
+    [SEPD19S]
+      EnableShareBackup = true
+      EnableERSExport = true
+    [DKLS19]
+      EnableShareBackup = true
+      EnableERSExport = true
+
+    [MultiInstance]
+      CleanupInterval = "5m"
+      CleanupProbability = 75
+
+image:
+  repository: <the name of the repository where tsm-node is stored>
+  pullPolicy: IfNotPresent
+  tag: "61.0.2" # override the version of the image
+
+sdkService:
+  type: NodePort
+  ports:
+    - port: 8080
+      name: sdk
+      targetPort: 8080
+    - port: 9000
+      name: mpc
+      targetPort: 9000
+
+mpcService:
+  enabled: false
+
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/certificate-arn: <acm certificate arn>
+    alb.ingress.kubernetes.io/healthcheck-path: /ping
+  hosts:
+    - host: "tsm0-sdk.exmaple.com"
+      paths:
+        - path: /
+          pathType: Prefix
+          port: 8080
+
+affinity:
+  podAntiAffinity: # spread the pods across nodes
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - tsm-node
+        topologyKey: kubernetes.io/hostname
+
+resources:
+  requests:
+    cpu: 14
