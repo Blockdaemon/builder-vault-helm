@@ -15,7 +15,7 @@ A Helm chart to deploy a Blockdaemon TSM node to kubernetes
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| config.configFile | string | `"TSM toml config file here\n"` | the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName |
+| config.configFile | string | `""` | the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName |
 | config.configSecretName | string | `""` | The name of the secret containing the TSM configuration file. MUTUALLY EXCLUSIVE with configFile |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
