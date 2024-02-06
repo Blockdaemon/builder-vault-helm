@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "tsm-helm.fullname" . }}
+  name: {{ include "tsm-node.fullname" . }}
   labels:
-    {{- include "tsm-helm.labels" . | nindent 4 }}
+    {{- include "tsm-node.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      {{- include "tsm-helm.selectorLabels" . | nindent 6 }}
+      {{- include "tsm-node.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -19,7 +19,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "tsm-helm.labels" . | nindent 8 }}
+        {{- include "tsm-node.labels" . | nindent 8 }}
 	{{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -28,7 +28,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "tsm-helm.serviceAccountName" . }}
+      serviceAccountName: {{ include "tsm-node.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -68,8 +68,17 @@ spec:
       
       volumes:
       - name: config-volume
+        {{- if and .Values.config.configFile .Values.config.configSecretName }}
+        # Fail the deployment by using a non-existent volume type
+        # This is a way to signal an error due to mutual exclusivity violation
+        error: "Both configFile and configSecretName are set, which is not allowed. Please set only one."
+        {{- else if .Values.config.configFile }}
         configMap:
-          name: {{ include "tsm-helm.fullname" . }}
+          name: {{ template "tsm-node.fullname" . }}-config
+        {{- else if .Values.config.configSecretName }}
+        secret:
+          secretName: {{ .Values.config.configSecretName }}
+        {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

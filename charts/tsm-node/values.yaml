@@ -1,4 +1,4 @@
-# Default values for tsm-helm.
+# Default values for tsm-node.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -6,9 +6,11 @@ replicaCount: 1
 index: 0
 
 config:
-  # The following values are used to configure the TSM node.
+  # -- the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName
   configFile: |
     TSM toml config file here
+  # -- The name of the secret containing the TSM configuration file. MUTUALLY EXCLUSIVE with configFile
+  configSecretName: ""
 
 image:
   # -- Image to use for deploying the TSM node
