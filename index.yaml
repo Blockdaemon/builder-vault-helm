@@ -1,0 +1,17 @@
+apiVersion: v1
+entries:
+  tsm-node:
+  - apiVersion: v2
+    appVersion: 61.0.2
+    created: "2024-02-06T21:05:58.946792205Z"
+    description: A Helm chart to deploy a Blockdaemon TSM node to kubernetes
+    digest: ec421a39859f08b2d88f6e3e871cd5af7a6a1601e429865a8ad06312f9f93b8d
+    maintainers:
+    - email: sre@blockdaemon.com
+      name: Blockdaemon
+    name: tsm-node
+    type: application
+    urls:
+    - https://github.com/Blockdaemon/builder-vault-helm/releases/download/tsm-node-0.1.0/tsm-node-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-02-06T21:05:58.94682875Z"
