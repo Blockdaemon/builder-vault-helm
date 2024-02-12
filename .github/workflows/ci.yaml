@@ -124,3 +124,8 @@ jobs:
           needs.kubeval-chart.result == 'failure' ||
           needs.kubeval-chart.result == 'cancelled'
         run: exit 1
+      - name: Fail for failed or cancelled install-chart
+        if: |
+          needs.install-chart.result == 'failure' ||
+          needs.install-chart.result == 'cancelled'
+        run: exit 1
