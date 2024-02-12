@@ -42,6 +42,30 @@ jobs:
       - name: Run helm-docs
         run: .github/helm-docs.sh
 
+  kubeval-chart:
+    runs-on: ubuntu-latest
+    needs:
+      - lint-chart
+      - lint-docs
+    strategy:
+      matrix:
+        k8s:
+          # from https://github.com/yannh/kubernetes-json-schema
+          - v1.26.12
+          - v1.27.9
+          - v1.28.5
+          - v1.29.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run kubeval
+        env:
+          KUBERNETES_VERSION: ${{ matrix.k8s }}
+        run: .github/kubeval.sh
+
   # Catch-all required check for test matrix
   test-success:
     needs:
@@ -60,4 +84,9 @@ jobs:
         if: |
           needs.lint-docs.result == 'failure' ||
           needs.lint-docs.result == 'cancelled'
+        run: exit 1
+      - name: Fail for failed or cancelled kubeval-chart
+        if: |
+          needs.kubeval-chart.result == 'failure' ||
+          needs.kubeval-chart.result == 'cancelled'
         run: exit 1
