@@ -5,7 +5,7 @@ config:
   configFile: |
     [Player]
       Index = 0
-      PrivateKey = "MHcCAQEEILM8uzMl8TE1heWE03LsiI267tThykKHSzo+d1OisW5CoAoGCCqGSM49AwEHoUQDQgAECzUOrdJvNm/gAJozWNhkjXSG2utbhQk8f7U5h+mSySDnow9WSl0fVXnL+EHZDTYjM3xLr9gyMYkE6khJFG8zpw=="
+      PrivateKey = "replace me"
 
     [Database]
       DriverName = "sqlite3"

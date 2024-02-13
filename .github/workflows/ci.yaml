@@ -141,7 +141,7 @@ jobs:
       - name: Inject ECR Repo and Image Tag into Values Files
         run: |
           IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
-          ./.github/inject-image-tag.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG
+          ./.github/inject-sensitive-values.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG ${{ secrets.PRIVATE_KEY }}
 
       - name: Install chart-testing
         uses: helm/chart-testing-action@v2.6.0
