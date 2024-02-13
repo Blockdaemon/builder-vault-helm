@@ -47,7 +47,10 @@ securityContext:
   #   - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
-  # runAsUser: 1000
+  # runAsUser: 2000
+  # allowPrivilegeEscalation: false
+  # seccompProfile:
+  #   type: "RuntimeDefault"
 
 # -- The primary service definition for the TSM node
 sdkService:
