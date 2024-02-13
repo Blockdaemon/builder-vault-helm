@@ -118,12 +118,13 @@ jobs:
       - name: Get appVersion from Chart.yaml
         id: chart_version
         run: |
-          APP_VERSION=$(grep 'appVersion:' charts/tsm-node/Chart.yaml | awk '{print $2}'| tr -d '\r')
+          APP_VERSION=$(grep 'appVersion:' charts/tsm-node/Chart.yaml | awk '{print $2}')
           echo "IMAGE_TAG=$APP_VERSION" >> $GITHUB_ENV
 
       - name: Pull image from ECR
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
           docker pull $ECR_REPO:$IMAGE_TAG
 
       - name: Create kind ${{ matrix.k8s }} cluster
@@ -134,10 +135,13 @@ jobs:
 
       - name: Load image into kind cluster
         run: |
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
           kind load docker-image $ECR_REPO:$IMAGE_TAG
 
       - name: Inject ECR Repo and Image Tag into Values Files
-        run: ./inject-image-tag.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG
+        run: |
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
+          ./inject-image-tag.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG
 
       - name: Install chart-testing
         uses: helm/chart-testing-action@v2.6.0
