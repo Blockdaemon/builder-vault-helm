@@ -9,7 +9,6 @@ config:
 
     [Database]
       DriverName = "sqlite3"
-      DataSourceName = "/tmp/tsmdb"
       EncryptorMasterPassword = "ENCRYPTION_KEY"
 
     [SDKServer]
@@ -37,7 +36,7 @@ ingress:
 securityContext:
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 2000
