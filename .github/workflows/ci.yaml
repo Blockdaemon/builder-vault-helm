@@ -124,6 +124,7 @@ jobs:
       - name: Pull image from ECR
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
           docker pull $ECR_REPO:$IMAGE_TAG
 
       - name: Create kind ${{ matrix.k8s }} cluster
