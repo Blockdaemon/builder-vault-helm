@@ -99,7 +99,7 @@ jobs:
           role-to-assume: ${{ secrets.IAM_ROLE }}
           role-session-name: ${{ github.actor }}
           aws-region: us-east-1
-          role-duration-seconds: 300
+          role-duration-seconds: 900
 
       - name: Get appVersion from Chart.yaml
         id: chart_version
