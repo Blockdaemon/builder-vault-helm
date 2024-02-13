@@ -93,13 +93,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: assume role
+      - name: assume base role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.IAM_ROLE }}
           role-session-name: ${{ github.actor }}
+          mask-aws-account-id: true
           aws-region: us-east-1
           role-duration-seconds: 900
+
+      - name: assume ecr role
+        run: aws sts assume-role --role-arn ${{ secrets.ECR_ROLE }} --role-session-name ${{ github.actor }} --region us-east-1 --tags "Key=repo,Value=builder-vault-helm"
 
       - name: Get appVersion from Chart.yaml
         id: chart_version
