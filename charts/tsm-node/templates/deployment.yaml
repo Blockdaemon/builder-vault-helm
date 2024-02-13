@@ -48,7 +48,7 @@ spec:
               name: {{ .name }}
               protocol: TCP
           {{- end }}
-          livenessProbe: #TODO
+          livenessProbe:
             httpGet:
               path: /ping
               port: sdk

@@ -7,6 +7,9 @@ on:
   pull_request:
 
   merge_group:
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   lint-chart:
@@ -42,11 +45,124 @@ jobs:
       - name: Run helm-docs
         run: .github/helm-docs.sh
 
+  kubeval-chart:
+    runs-on: ubuntu-latest
+    needs:
+      - lint-chart
+      - lint-docs
+    strategy:
+      matrix:
+        k8s:
+          # from https://github.com/yannh/kubernetes-json-schema
+          - v1.26.12
+          - v1.27.9
+          - v1.28.5
+          - v1.29.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run kubeval
+        env:
+          KUBERNETES_VERSION: ${{ matrix.k8s }}
+        run: .github/kubeval.sh
+
+  install-chart:
+    name: install-chart
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.repository_owner != github.event.pull_request.head.repo.owner.login || !startsWith(github.event.pull_request.head.ref, 'renovate/') }}
+    needs:
+      - lint-chart
+      - lint-docs
+      - kubeval-chart
+    strategy:
+      matrix:
+        k8s:
+          # from https://hub.docker.com/r/kindest/node/tags
+          - v1.26.13
+          - v1.27.10
+          - v1.28.6
+          - v1.29.1
+    env:
+      ECR_REPO: "${{ secrets.ECR_REPO }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: assume base role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.IAM_ROLE }}
+          role-session-name: ${{ github.actor }}
+          mask-aws-account-id: true
+          aws-region: us-east-1
+          role-duration-seconds: 900
+
+      - name: assume ecr role
+        run: |
+          aws sts assume-role --role-arn ${{ secrets.ECR_ROLE }} --role-session-name ${{ github.actor }} --region us-east-1 --tags "Key=repo,Value=builder-vault-helm" > assume-role-output.json
+          AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' assume-role-output.json)
+          AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' assume-role-output.json)
+          AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' assume-role-output.json)
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
+          echo "::add-mask::$AWS_ACCESS_KEY_ID"
+          echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
+          echo "::add-mask::$AWS_SESSION_TOKEN"
+
+      - name: Get appVersion from Chart.yaml
+        id: chart_version
+        run: |
+          APP_VERSION=$(grep 'appVersion:' charts/tsm-node/Chart.yaml | awk '{print $2}')
+          echo "IMAGE_TAG=$APP_VERSION" >> $GITHUB_ENV
+
+      - name: Pull image from ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
+          docker pull $ECR_REPO:$IMAGE_TAG
+
+      - name: Create kind ${{ matrix.k8s }} cluster
+        uses: helm/kind-action@v1.9.0
+        with:
+          node_image: kindest/node:${{ matrix.k8s }}
+          version: v0.21.0
+
+      - name: Load image into kind cluster
+        run: |
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
+          kind load docker-image $ECR_REPO:$IMAGE_TAG -n chart-testing
+
+      - name: Inject ECR Repo and Image Tag into Values Files
+        run: |
+          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
+          ./.github/inject-sensitive-values.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG ${{ secrets.PRIVATE_KEY }}
+
+      - name: Install chart-testing
+        uses: helm/chart-testing-action@v2.6.0
+
+      - name: Run chart install
+        run: ct install --config .github/ct.yaml
+
+      - name: Cleanup AWS Credentials
+        if: always()
+        run: |
+          echo "AWS_ACCESS_KEY_ID=" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=" >> $GITHUB_ENV
+
   # Catch-all required check for test matrix
   test-success:
     needs:
       - lint-chart
       - lint-docs
+      - kubeval-chart
+      - install-chart
     runs-on: ubuntu-latest
     timeout-minutes: 1
     if: always()
@@ -60,4 +176,14 @@ jobs:
         if: |
           needs.lint-docs.result == 'failure' ||
           needs.lint-docs.result == 'cancelled'
+        run: exit 1
+      - name: Fail for failed or cancelled kubeval-chart
+        if: |
+          needs.kubeval-chart.result == 'failure' ||
+          needs.kubeval-chart.result == 'cancelled'
+        run: exit 1
+      - name: Fail for failed or cancelled install-chart
+        if: |
+          needs.install-chart.result == 'failure' ||
+          needs.install-chart.result == 'cancelled'
         run: exit 1
