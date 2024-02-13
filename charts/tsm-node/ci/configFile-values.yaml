@@ -3,8 +3,17 @@ index: 0
 
 config:
   configFile: |
-    tsm-config-file
+    [Player]
+      Index = 0
+      PrivateKey = "MHcCAQEEILM8uzMl8TE1heWE03LsiI267tThykKHSzo+d1OisW5CoAoGCCqGSM49AwEHoUQDQgAECzUOrdJvNm/gAJozWNhkjXSG2utbhQk8f7U5h+mSySDnow9WSl0fVXnL+EHZDTYjM3xLr9gyMYkE6khJFG8zpw=="
 
+    [Database]
+      DriverName = "sqlite3"
+      DataSourceName = "/tmp/tsmdb"
+      EncryptorMasterPassword = "ENCRYPTION_KEY"
+
+    [SDKServer]
+      Port = 8080
 image:
   repository: <the name of the repository where tsm-node is stored>
   pullPolicy: IfNotPresent
