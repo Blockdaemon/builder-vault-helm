@@ -132,3 +132,14 @@ affinity:
 resources:
   requests:
     cpu: 14
+
+securityContext:
+  capabilities:
+   drop:
+   - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 2000
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: "RuntimeDefault"
