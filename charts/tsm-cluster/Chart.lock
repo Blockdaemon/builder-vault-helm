@@ -1,0 +1,12 @@
+dependencies:
+- name: tsm-node
+  repository: https://blockdaemon.github.io/builder-vault-helm/
+  version: 0.1.2
+- name: tsm-node
+  repository: https://blockdaemon.github.io/builder-vault-helm/
+  version: 0.1.2
+- name: tsm-node
+  repository: https://blockdaemon.github.io/builder-vault-helm/
+  version: 0.1.2
+digest: sha256:5539cf4ee151f849ce3426341f3f7aa93d2b8b8bbbe7528b8727580a636b942d
+generated: "2024-02-14T10:58:45.955449-06:00"
