@@ -145,6 +145,7 @@ jobs:
         run: |
           IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
           ./.github/inject-sensitive-values.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG ${{ secrets.PRIVATE_KEY }}
+          ./.github/inject-sensitive-values.sh charts/tsm-cluster/ci $ECR_REPO $IMAGE_TAG ${{ secrets.PRIVATE_KEY }}
 
       - name: Install chart-testing
         uses: helm/chart-testing-action@v2.6.0
