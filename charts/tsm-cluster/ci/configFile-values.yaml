@@ -1,3 +1,6 @@
+ingress:
+  enabled: false
+
 tsm0:
   replicaCount: 1
   index: 0
@@ -71,3 +74,6 @@ tsm1:
 
   ingress:
     enabled: false
+
+tsm2:
+  enabled: false
