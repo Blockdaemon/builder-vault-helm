@@ -23,6 +23,8 @@ chmod +x .bin/semver2
 # Compute required kubernetes api versions
 apis=()
 
+helm repo add builder-vault https://blockdaemon.github.io/builder-vault-helm/ && helm repo update
+
 # validate charts
 for CHART_DIR in ${CHART_DIRS}; do
   (cd "charts/${CHART_DIR}"; helm dependency build)

@@ -149,6 +149,9 @@ jobs:
       - name: Install chart-testing
         uses: helm/chart-testing-action@v2.6.0
 
+      - name: Add repo
+        run: helm repo add builder-vault https://blockdaemon.github.io/builder-vault-helm/ && helm repo update
+
       - name: Run chart install
         run: ct install --config .github/ct.yaml
 
