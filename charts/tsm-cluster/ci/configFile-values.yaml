@@ -40,12 +40,12 @@ tsm0:
 
 tsm1:
   replicaCount: 1
-  index: 1
+  index: 0
 
   config:
     configFile: |
       [Player]
-        Index = 1
+        Index = 0
         PrivateKey = "replace me"
 
       [Database]
