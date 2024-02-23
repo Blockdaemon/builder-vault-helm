@@ -1,6 +1,6 @@
 # tsm-node
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 61.0.2](https://img.shields.io/badge/AppVersion-61.0.2-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 61.0.2](https://img.shields.io/badge/AppVersion-61.0.2-informational?style=flat-square)
 
 A Helm chart to deploy a Blockdaemon TSM node to kubernetes
 
@@ -17,6 +17,7 @@ A Helm chart to deploy a Blockdaemon TSM node to kubernetes
 | affinity | object | `{}` |  |
 | config.configFile | string | `""` | the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName |
 | config.configSecretName | string | `""` | The name of the secret containing the TSM configuration file. MUTUALLY EXCLUSIVE with configFile |
+| env | object | `{}` | Environment variables to be passed to the TSM node deployment |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `""` | Image to use for deploying the TSM node |

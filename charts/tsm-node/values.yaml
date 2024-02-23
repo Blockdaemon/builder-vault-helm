@@ -5,6 +5,9 @@
 replicaCount: 1
 index: 0
 
+# -- Environment variables to be passed to the TSM node deployment
+env: {}
+
 config:
   # -- the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName
   configFile: ""
