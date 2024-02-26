@@ -2,7 +2,12 @@ replicaCount: 1
 index: 0
 
 env:
-  tsm: node
+  - name: POD_IP
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
+  - name: tsm
+    value: node
 
 config:
   configFile: |
