@@ -147,7 +147,7 @@ jobs:
         uses: helm/chart-testing-action@v2.6.0
 
       - name: Run chart install
-        run: ct install --excluded-charts charts/tsm-audit-server --config .github/ct.yaml
+        run: ct install --excluded-charts tsm-audit-server --config .github/ct.yaml
 
       - name: Cleanup AWS Credentials
         if: always()
