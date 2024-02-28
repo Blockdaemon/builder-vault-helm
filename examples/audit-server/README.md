@@ -52,7 +52,7 @@ ingress:
     alb.ingress.kubernetes.io/healthcheck-path: /ping
     alb.ingress.kubernetes.io/success-codes: "204"
   hosts:
-    - host: "tsm-audit.blockdaemon.network"
+    - host: "tsm-audit.example.com"
       paths:
         - path: /
           pathType: Prefix
