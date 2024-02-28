@@ -120,17 +120,12 @@ jobs:
         run: |
           APP_VERSION=$(grep 'appVersion:' charts/tsm-node/Chart.yaml | awk '{print $2}')
           echo "IMAGE_TAG=$APP_VERSION" >> $GITHUB_ENV
-          AUDIT_APP_VERSION=$(grep 'appVersion:' charts/tsm-audit-server/Chart.yaml | awk '{print $2}')
-          echo "AUDIT_IMAGE_TAG=$AUDIT_APP_VERSION" >> $GITHUB_ENV
 
       - name: Pull images from ECR
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
           IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
           docker pull $ECR_REPO:$IMAGE_TAG
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AUDIT_ECR_REPO
-          AUDIT_IMAGE_TAG=$(echo ${{ env.AUDIT_IMAGE_TAG }} | tr -d '\r')
-          docker pull $AUDIT_ECR_REPO:$AUDIT_IMAGE_TAG
 
       - name: Create kind ${{ matrix.k8s }} cluster
         uses: helm/kind-action@v1.9.0
@@ -141,19 +136,12 @@ jobs:
       - name: Load image into kind cluster
         run: |
           IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
-          AUDIT_IMAGE_TAG=$(echo ${{ env.AUDIT_IMAGE_TAG }} | tr -d '\r')
           kind load docker-image $ECR_REPO:$IMAGE_TAG -n chart-testing
-          kind load docker-image $AUDIT_ECR_REPO:$AUDIT_IMAGE_TAG -n chart-testing
 
       - name: Inject ECR Repo and Image Tag into Values Files
         run: |
           IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
           ./.github/inject-sensitive-values.sh charts/tsm-node/ci $ECR_REPO $IMAGE_TAG ${{ secrets.PRIVATE_KEY }}
-
-      - name: Inject ECR Repo and Image Tag into Audit Values Files
-        run: |
-          IMAGE_TAG=$(echo ${{ env.IMAGE_TAG }} | tr -d '\r')
-          ./.github/inject-sensitive-values.sh charts/tsm-audit-server/ci $AUDIT_ECR_REPO $AUDIT_IMAGE_TAG ${{ secrets.PRIVATE_KEY }}
 
       - name: Install chart-testing
         uses: helm/chart-testing-action@v2.6.0
