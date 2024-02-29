@@ -1,0 +1,14 @@
+apiVersion: v2
+name: tsm-audit-server
+description: A Helm chart to deploy a Blockdaemon TSM audit server to kubernetes
+maintainers:
+  - name: Blockdaemon
+    email: sre@blockdaemon.com
+type: application
+version: 0.1.0
+appVersion: "v1.1.0"
+dependencies:
+  - name: mongodb
+    version: 14.12.1
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: mongodb.enabled
