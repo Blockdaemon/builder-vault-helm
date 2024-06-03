@@ -1,0 +1,92 @@
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: tsm0-sdk.exmaple.com
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: dev-tsm-tsm0
+          servicePort: 8080
+
+    - host: tsm1-sdk.example
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: dev-tsm-tsm1
+          servicePort: 8080
+
+tsm0:
+  replicaCount: 1
+  index: 0
+
+  config:
+    configFile: |
+      [Player]
+        Index = 0
+        PrivateKey = "replace me"
+
+      [Database]
+        DriverName = "sqlite3"
+        DataSourceName = "/tmp/tsmdb"
+        EncryptorMasterPassword = "ENCRYPTION_KEY"
+
+      [SDKServer]
+        Port = 8080
+  image:
+    repository: <the name of the repository where tsm-node is stored>
+    pullPolicy: IfNotPresent
+    tag: "61.0.2"
+  sdkService:
+    type: NodePort
+    ports:
+      - port: 8080
+        name: sdk
+        targetPort: 8080
+      - port: 9000
+        name: mpc
+        targetPort: 9000
+
+  mpcService:
+    enabled: false
+
+  ingress:
+    enabled: false
+
+tsm1:
+  replicaCount: 1
+  index: 1
+
+  config:
+    configFile: |
+      [Player]
+        Index = 1
+        PrivateKey = "replace me"
+
+      [Database]
+        DriverName = "sqlite3"
+        DataSourceName = "/tmp/tsmdb"
+        EncryptorMasterPassword = "ENCRYPTION_KEY"
+
+      [SDKServer]
+        Port = 8080
+  image:
+    repository: <the name of the repository where tsm-node is stored>
+    pullPolicy: IfNotPresent
+    tag: "61.0.2"
+  sdkService:
+    type: NodePort
+    ports:
+      - port: 8080
+        name: sdk
+        targetPort: 8080
+      - port: 9000
+        name: mpc
+        targetPort: 9000
+
+  mpcService:
+    enabled: false
+
+  ingress:
+    enabled: false

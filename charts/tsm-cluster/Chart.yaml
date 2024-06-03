@@ -1,0 +1,25 @@
+apiVersion: v2
+name: tsm-cluster
+description: A Helm chart to deploy a set of Blockdaemon TSM nodes to kubernetes. It can be used as is, or as inpriation to create your own "umbrella" chart that uses tsm-node as a dependency.
+maintainers:
+  - name: Blockdaemon
+    email: sre@blockdaemon.com
+type: application
+version: 0.1.0
+appVersion: "61.0.2"
+dependencies:
+  - name: tsm-node
+    version: 0.1.2
+    repository: https://blockdaemon.github.io/builder-vault-helm/
+    alias: tsm0
+    condition: tsm0.enabled
+  - name: tsm-node
+    version: 0.1.2
+    repository: https://blockdaemon.github.io/builder-vault-helm/
+    alias: tsm1
+    condition: tsm1.enabled
+  - name: tsm-node
+    version: 0.1.2
+    repository: https://blockdaemon.github.io/builder-vault-helm/
+    alias: tsm2
+    condition: tsm2.enabled
