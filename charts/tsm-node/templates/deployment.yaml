@@ -13,10 +13,20 @@ spec:
       {{- include "tsm-node.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- if and (.Values.podAnnotations) (.Values.nodeConfig.configFile) }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      {{- with .Values.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+      {{- else if .Values.podAnnotations }}
+      annotations:
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+      {{- else if .Values.nodeConfig.configFile }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       {{- end }}
       labels:
         {{- include "tsm-node.labels" . | nindent 8 }}
@@ -70,24 +80,25 @@ spec:
               port: sdk
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          
           volumeMounts:
           - name: config-volume
             mountPath: /config
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      
       volumes:
       - name: config-volume
-        {{- if and .Values.config.configFile .Values.config.configSecretName }}
-        {{- fail "config.configFile and config.configSecretName are mutually exclusive" }}
-        {{- else if .Values.config.configFile }}
+        {{- if or (and .Values.nodeConfig.configFile .Values.nodeConfig.configSecretName) (and .Values.nodeConfig.configFile .Values.nodeConfig.configCSISecretStore) (and .Values.nodeConfig.configSecretName .Values.nodeConfig.configCSISecretStore) (and .Values.nodeConfig.configFile .Values.nodeConfig.configSecretName .Values.cconfig.onfigCSISecretStore) }}
+        {{- fail "config.configFile and config.configSecretName and config.configCSISecretStore are mutually exclusive" }}
+        {{- else if .Values.nodeConfig.configFile }}
         configMap:
           name: {{ template "tsm-node.fullname" . }}
-        {{- else if .Values.config.configSecretName }}
+        {{- else if .Values.nodeConfig.configSecretName }}
         secret:
-          secretName: {{ .Values.config.configSecretName }}
+          secretName: {{ .Values.nodeConfig.configSecretName }}
+        {{- else if .Values.nodeConfig.configCSISecretStore.csi }}
+        csi:
+          {{- toYaml .Values.nodeConfig.configCSISecretStore.csi | nindent 10 }}
         {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}

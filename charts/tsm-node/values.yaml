@@ -8,11 +8,20 @@ index: 0
 # -- Environment variables to be passed to the TSM node deployment
 env: {}
 
-config:
-  # -- the TSM configuration file that will be mounted into the TSM node.  MUTUALLY EXCLUSIVE with configSecretName
+nodeConfig:
+  # -- The name of the kubernetes generic secret containing the TSM configuration file. Secret is to be deployed separately from the chart. MUTUALLY EXCLUSIVE with configFile and configCSISecretStore
+  configSecretName: ""    # Set a unique value relevant TSM node index
+
+  # -- The name of the CSI Secret-Store secret containing the TSM configuration file. Secret is to be deployed separately from the chart. MUTUALLY EXCLUSIVE with configFile and configSecretName
+  configCSISecretStore: {}
+  # csi:
+  #   driver: secrets-store.csi.k8s.io
+  #   readOnly: true
+  #   volumeAttributes:
+  #     secretProviderClass: "tsm0-tsm-node"      # Set a unique value relevant TSM node index
+
+  # -- The TSM configuration that will be mounted into the TSM node via a ConfigMap. Not recommended for production use. MUTUALLY EXCLUSIVE with configSecretName and configCSISecretStore
   configFile: ""
-  # -- The name of the secret containing the TSM configuration file. MUTUALLY EXCLUSIVE with configFile
-  configSecretName: ""
 
 image:
   # -- Image to use for deploying the TSM node

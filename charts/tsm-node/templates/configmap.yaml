@@ -1,3 +1,4 @@
+{{- if .Values.nodeConfig.configFile }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +7,5 @@ metadata:
     {{- include "tsm-node.labels" . | nindent 4 }}
 data:
   config.toml: |
-    {{- .Values.config.configFile | nindent 4 }}
+    {{- .Values.nodeConfig.configFile | nindent 4 }}
+{{- end }}
