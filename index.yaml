@@ -3,6 +3,24 @@ entries:
   tsm-audit-server:
   - apiVersion: v2
     appVersion: v1.1.0
+    created: "2024-11-07T09:02:32.795073-08:00"
+    dependencies:
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.12.1
+    description: A Helm chart to deploy a Blockdaemon TSM audit server to kubernetes
+    digest: cbcfa22aab3b8c8d340d65dbe02383854eb21de44b607140b009e355c3dfd31a
+    maintainers:
+    - email: sre@blockdaemon.com
+      name: Blockdaemon
+    name: tsm-audit-server
+    type: application
+    urls:
+    - https://github.com/Blockdaemon/builder-vault-helm/releases/download/tsm-audit-server-0.1.1/tsm-audit-server-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v1.1.0
     created: "2024-02-29T15:05:49.367283329Z"
     dependencies:
     - condition: mongodb.enabled
@@ -20,6 +38,19 @@ entries:
     - https://github.com/Blockdaemon/builder-vault-helm/releases/download/tsm-audit-server-0.1.0/tsm-audit-server-0.1.0.tgz
     version: 0.1.0
   tsm-node:
+  - apiVersion: v2
+    appVersion: 62.2.4
+    created: "2024-11-07T09:02:33.065379-08:00"
+    description: A Helm chart to deploy a Blockdaemon TSM node to kubernetes
+    digest: 98f66d389765bc7a16b242365a96a45902c1df6ef8d4061589497dd02242ab65
+    maintainers:
+    - email: sre@blockdaemon.com
+      name: Blockdaemon
+    name: tsm-node
+    type: application
+    urls:
+    - https://github.com/Blockdaemon/builder-vault-helm/releases/download/tsm-node-0.1.6/tsm-node-0.1.6.tgz
+    version: 0.1.6
   - apiVersion: v2
     appVersion: 61.0.2
     created: "2024-02-26T21:52:19.116658745Z"
@@ -98,4 +129,4 @@ entries:
     urls:
     - https://github.com/Blockdaemon/builder-vault-helm/releases/download/tsm-node-0.1.0/tsm-node-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-29T15:05:49.367310209Z"
+generated: "2024-11-07T09:02:33.065399-08:00"
