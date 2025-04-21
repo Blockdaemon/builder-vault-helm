@@ -1,4 +1,4 @@
-# TSM Multi Instance with tsm-node chart
+# Replicated MPC Nodes with Direct Communication
 
 This directory has an example of deploying a multi instance TSM cluster with the tsm-node helm chart to a single kubernetes cluster.
 
@@ -15,7 +15,71 @@ helm repo update
 
 The deployed cluster will look like this:
 
-![TSM Cluster](assets/tsm-cluster.jpeg)
+```mermaid
+C4Deployment
+    title Builder Vault TSM Deployment
+
+    Person(sdk, "SDK", "Client application using Builder Vault SDK")
+
+    Deployment_Node(k8s1, "Kubernetes Cluster 1", "Kubernetes") {
+        Deployment_Node(ns1, "TSM Node 1 Namespace", "Kubernetes Namespace") {
+            Deployment_Node(lb1, "Load Balancers", "Kubernetes Service") {
+                Container(sdk_lb1, "SDK Load Balancer", "Load balances SDK requests")
+                Container(mpc_lb1, "MPC Load Balancer", "Load balances MPC communications")
+            }
+            Deployment_Node(instances1, "Instances", "Kubernetes Deployment") {
+                Container(instance1a, "Instance A", "TSM Node 1 Instance A")
+                Container(instance1b, "Instance B", "TSM Node 1 Instance B")
+            }
+        }
+    }
+
+    Deployment_Node(k8s2, "Kubernetes Cluster 2", "Kubernetes") {
+        Deployment_Node(ns2, "TSM Node 2 Namespace", "Kubernetes Namespace") {
+            Deployment_Node(lb2, "Load Balancers", "Kubernetes Service") {
+                Container(sdk_lb2, "SDK Load Balancer", "Load balances SDK requests")
+                Container(mpc_lb2, "MPC Load Balancer", "Load balances MPC communications")
+            }
+            Deployment_Node(instances2, "Instances", "Kubernetes Deployment") {
+                Container(instance2a, "Instance A", "TSM Node 2 Instance A")
+                Container(instance2b, "Instance B", "TSM Node 2 Instance B")
+            }
+        }
+    }
+
+    Deployment_Node(db1, "Node 1 Database", "External Database") {
+        ContainerDb(db1, "Database", "Node 1 Database")
+    }
+
+    Deployment_Node(db2, "Node 2 Database", "External Database") {
+        ContainerDb(db2, "Database", "Node 2 Database")
+    }
+
+    Rel(sdk, sdk_lb1, "Uses", "HTTP/HTTPS")
+    Rel(sdk, sdk_lb2, "Uses", "HTTP/HTTPS")
+
+    Rel(sdk_lb1, instance1a, "Routes to", "HTTP/HTTPS")
+    Rel(sdk_lb1, instance1b, "Routes to", "HTTP/HTTPS")
+    Rel(sdk_lb2, instance2a, "Routes to", "HTTP/HTTPS")
+    Rel(sdk_lb2, instance2b, "Routes to", "HTTP/HTTPS")
+
+    Rel(mpc_lb1, instance1a, "Routes to", "MPC Protocol")
+    Rel(mpc_lb1, instance1b, "Routes to", "MPC Protocol")
+    Rel(mpc_lb2, instance2a, "Routes to", "MPC Protocol")
+    Rel(mpc_lb2, instance2b, "Routes to", "MPC Protocol")
+
+    Rel(instance1a, db1, "Reads/Writes", "Database Protocol")
+    Rel(instance1b, db1, "Reads/Writes", "Database Protocol")
+    Rel(instance2a, db2, "Reads/Writes", "Database Protocol")
+    Rel(instance2b, db2, "Reads/Writes", "Database Protocol")
+
+    Rel(instance1a, mpc_lb2, "MPC Communication", "MPC Protocol")
+    Rel(instance1b, mpc_lb2, "MPC Communication", "MPC Protocol")
+    Rel(instance2a, mpc_lb1, "MPC Communication", "MPC Protocol")
+    Rel(instance2b, mpc_lb1, "MPC Communication", "MPC Protocol")
+
+    UpdateLayoutConfig($c4ShapeInRow="2", $c4ShapeInRow="2")
+```
 
 Each Builder Vault TSM node must have it own configuration which it reads on startup from `/config/config.toml`. A sample config file for each node is provided: `config0.toml`, `config1.toml`, `config2.toml`. You have the option to inject these config files from either a `Kubernetes Secret` or `CSI Secret Store`. This is configured through the helm values `.values.nodeConfig`.
 
