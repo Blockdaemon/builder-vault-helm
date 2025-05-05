@@ -1,12 +1,15 @@
 package main
 
 import (
+	"benchmark/random"
+	"benchmark/test"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+
 	"net/url"
 	"os"
 	"path/filepath"
@@ -15,9 +18,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.blockdaemon.com/sepior/go-mpc-lib/sdkv2/tsm"
-	"go.blockdaemon.com/sepior/go-mpc-lib/test"
-	"go.blockdaemon.com/sepior/libmpc/pkg/random"
+	"gitlab.com/Blockdaemon/go-tsm-sdkv2/v70/tsm"
 	"golang.org/x/exp/rand"
 	"golang.org/x/sync/errgroup"
 )
@@ -263,7 +264,7 @@ func (b *Benchmark) benchmarkSign() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -303,7 +304,7 @@ func (b *Benchmark) benchmarkSign() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -368,7 +369,7 @@ func (b *Benchmark) benchmarkPresig() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -431,7 +432,7 @@ func (b *Benchmark) benchmarkPresig() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -522,7 +523,7 @@ func (b *Benchmark) benchmarkOnline() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -588,7 +589,7 @@ func (b *Benchmark) benchmarkOnline() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -644,7 +645,7 @@ func (b *Benchmark) benchmarkGetPub() error {
 				}
 
 				if b.delay > 0 {
-					time.Sleep(time.Duration(rand.Uint64()) % b.delay)
+					time.Sleep(time.Duration(rand.Int63n(int64(b.delay))) % b.delay)
 				}
 
 			}
@@ -700,16 +701,6 @@ func (b *Benchmark) benchmarkGetPub() error {
 
 }
 
-type ECDSAPresigIDs struct {
-	ECDSAKeyID string
-	PresigIDs  []string
-}
-
-type Ed25519PresigIDs struct {
-	Ed25519KeyID string
-	PresigIDs    []string
-}
-
 func (b *Benchmark) generateKeys() error {
 
 	b.ecdsaKeyID = random.String(20)
@@ -739,6 +730,16 @@ func (b *Benchmark) generateKeys() error {
 	}
 
 	return nil
+}
+
+type ECDSAPresigIDs struct {
+	ECDSAKeyID string
+	PresigIDs  []string
+}
+
+type Ed25519PresigIDs struct {
+	Ed25519KeyID string
+	PresigIDs    []string
 }
 
 type urlArray []*url.URL
