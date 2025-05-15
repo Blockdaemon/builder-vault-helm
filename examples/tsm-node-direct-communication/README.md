@@ -153,12 +153,19 @@ nodeSelector:
   kubernetes.azure.com/security-type: ConfidentialVM
 ```
 
-## Deployment
+### Deploy databases:
+```shell
+kubectl create namespace tsm
+kubectl apply -n tsm -f db0-postgres.yaml
+kubectl apply -n tsm -f db1-mysql.yaml
+kubectl apply -n tsm -f db2-postgres.yaml
+```
 
+## Deploy each BuilderVault TSM node:
 To deploy the BuilderVault, perform the helm deployment for each TSM node:
 ```
-helm install tsm0 blockdaemon/tsm-node --create-namespace -n tsm -f tsm0.yaml
-helm install tsm1 blockdaemon/tsm-node --create-namespace -n tsm -f tsm1.yaml
-helm install tsm2 blockdaemon/tsm-node --create-namespace -n tsm -f tsm2.yaml
+helm install tsm0 builder-vault/tsm-node --create-namespace -n tsm -f tsm0.yaml
+helm install tsm1 builder-vault/tsm-node --create-namespace -n tsm -f tsm1.yaml
+helm install tsm2 builder-vault/tsm-node --create-namespace -n tsm -f tsm2.yaml
 ```
 

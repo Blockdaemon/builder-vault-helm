@@ -41,6 +41,10 @@
     APIKey = "NaseBBHEzG7KqmdqTH/vJZeYeZ7UCtCfsHra6QK9DHo=" # apikey3
     ApplicationID = "app2"
 
+[MultiInstance]
+    CleanupInterval = "5m"
+    CleanupProbability = 75
+
 [DKLS19.Features]
     GenerateKey = true
     GeneratePresignatures = true
