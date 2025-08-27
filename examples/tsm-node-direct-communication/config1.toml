@@ -29,9 +29,13 @@
 [SDKServer]
 	Port = 8080
 
-[MetricsServer]
-    Port = 9102  
+[ManagementServer]
+    Port = 14401
+[ManagementServer.Metrics]
     Prometheus = true
+[[ManagementServer.APIKeys]]
+    APIKey = "DQiRNhibSI9mWoNaa1AJ541olzCzPPOzlZIqkHdEkgQ=" # mgmtapikey1
+    Permissions=["HEALTH", "TSMINFO", "METRICS" ]
 
 [[Authentication.APIKeys]]
 	APIKey = "1PebMT+BBvWvEIrZb/UWIi2/1aCrUvQwjksa0ddA3mA=" # apikey1
@@ -42,6 +46,7 @@
     ApplicationID = "app2"
 
 [MultiInstance]
+    Address = "{{ env `TSM_MULTIINSTANCE_ADDRESS` }}"
     CleanupInterval = "5m"
     CleanupProbability = 75
 
@@ -55,10 +60,10 @@
     ChainCode = true
     Reshare = true
     CopyKey = true
-    BackupKeyShare = true
-    RestoreKeyShare = true
-    ExportKeyShares = true
-    ImportKeyShares = true
+    ExportKeyShare = true
+    ImportKeyShare = true
+    ExportKey = true
+    ImportKey = true
     BIP32GenerateSeed = true
     BIP32DeriveFromSeed = true
     BIP32DeriveFromKey = true
@@ -77,23 +82,23 @@
     ChainCode = true
     Reshare = true
     CopyKey = true
-    BackupKeyShare = true
-    RestoreKeyShare = true
-    ExportKeyShares = true
-    ImportKeyShares = true
+    ExportKeyShare = true
+    ImportKeyShare = true
+    ExportKey = true
+    ImportKey = true
 
 [ADN06.Features]
     PublicKey = true
     SignPKCS1v15 = true
     SignPSS = true
     Decrypt = true
-    ExportKeyShares = true
-    ImportKeyShares = true
+    ExportKey = true
+    ImportKey = true
 
 [MRZ15.AESFeatures]
     GenerateKey = true
-    ExportKeyShares = true
-    ImportKeyShares = true
+    ExportKey = true
+    ImportKey = true
     CTRKeyStream = true
     CBCEncrypt = true
     CBCDecrypt = true
@@ -103,7 +108,7 @@
 
 [MRZ15.HMACFeatures]
     GenerateKey = true
-    ExportKeyShares = true
-    ImportKeyShares = true
+    ExportKey = true
+    ImportKey = true
     HMACSHA256 = true
     HMACSHA512 = true

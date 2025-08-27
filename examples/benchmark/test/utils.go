@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"gitlab.com/Blockdaemon/go-tsm-sdkv2/v70/tsm"
+	"gitlab.com/Blockdaemon/go-tsm-sdkv2/v72/tsm"
 	"golang.org/x/sync/errgroup"
 )
 

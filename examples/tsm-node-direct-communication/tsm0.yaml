@@ -4,10 +4,16 @@ index: 0
 nodeConfig:   # https://builder-vault-tsm.docs.blockdaemon.com/docs/example-tsm-configuration-file
   configSecretName: tsm0-tsm-node
 
+env:
+  - name: TSM_MULTIINSTANCE_ADDRESS
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
+
 image:
   repository: <the name of the repository where tsm-node is stored>
   pullPolicy: IfNotPresent
-  tag: "62.2.4" # override the version of the image
+  tag: "72.0.0" # override the version of the image
 
 sdkService:
   type: NodePort
@@ -15,6 +21,9 @@ sdkService:
     - port: 8080
       name: sdk
       targetPort: 8080
+    - port: 14401
+      name: management
+      targetPort: 14401
     - port: 9000
       name: mpc
       targetPort: 9000
