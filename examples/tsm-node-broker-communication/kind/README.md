@@ -133,14 +133,22 @@ kubectl apply -n tsm -f broker-redis.yaml
 ### Deploy each BuilderVault TSM node:
   - update tsm[0-2].yaml `image.repository` with your container registery. 
 ```shell
-kind load docker-image <registry>/tsm-node:69.0.0
+kind load docker-image <registry>/tsm-node:72.0.0
 helm install tsm0 builder-vault/tsm-node --create-namespace -n tsm -f tsm0.yaml
 helm install tsm1 builder-vault/tsm-node --create-namespace -n tsm -f tsm1.yaml
 helm install tsm2 builder-vault/tsm-node --create-namespace -n tsm -f tsm2.yaml
 ```
 
+### Create Dynamic Client SDK API key for each node using the Management Server API
+  - use HTTPie to create the API key for each node.
+```shell
+export APIKEY0=$(http POST http://localhost/mgmt0/management/apikey "Authorization: APIKEY mgmtapikey0" applicationId="demoapp" | jq -r '.apiKey')
+export APIKEY1=$(http POST http://localhost/mgmt1/management/apikey "Authorization: APIKEY mgmtapikey1" applicationId="demoapp" | jq -r '.apiKey')
+export APIKEY2=$(http POST http://localhost/mgmt2/management/apikey "Authorization: APIKEY mgmtapikey2" applicationId="demoapp" | jq -r '.apiKey')
+```
+
 ### Benchmark
 ```shell
 cd ../../benchmark
-go run . -operation sign -ecdsaClients 25 -duration 30s -threshold 1 -signers 3 -node http://apikey0@localhost:80/tsm0 -node http://apikey1@localhost:80/tsm1 -node http://apikey2@localhost:80/tsm2
+go run . -operation sign -ecdsaClients 25 -duration 30s -threshold 1 -signers 3 -node http://$APIKEY0@localhost:80/tsm0 -node http://$APIKEY1@localhost:80/tsm1 -node http://$APIKEY2@localhost:80/tsm2
 ```
